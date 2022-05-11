@@ -1,1 +1,1 @@
-game_template
+[DXライブラリ](https://dxlib.xsrv.jp/)を使用
