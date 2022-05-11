@@ -1,5 +1,6 @@
 #include<Windows.h>
 #include"game.h"
+#include"global_config.h"
 
 int WINAPI WinMain(
 	[[maybe_unused]] _In_ HINSTANCE hInstance, 
@@ -7,6 +8,8 @@ int WINAPI WinMain(
 	[[maybe_unused]] _In_ LPSTR lpCmdLine, 
 	[[maybe_unused]] _In_ int nShowCmd) 
 {
+	if (DxLib_Init() == -1)return -1;
+
 	SetAlwaysRunFlag(TRUE);
 	ChangeWindowMode(TRUE);
 	SetGraphMode(1280, 720, 32);
@@ -14,7 +17,7 @@ int WINAPI WinMain(
 	SetWindowStyleMode(7);
 	SetWindowSizeChangeEnableFlag(TRUE);
 
-	if (DxLib_Init() == -1)return -1;
+	
 	Game game_controler;
 	game_controler.init();
 	while (ProcessMessage() == 0)
