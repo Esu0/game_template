@@ -2,6 +2,7 @@
 #include"game.h"
 #include"global_config.h"
 
+
 int WINAPI WinMain(
 	[[maybe_unused]] _In_ HINSTANCE hInstance, 
 	[[maybe_unused]] _In_opt_  HINSTANCE hPrevInstance, 
@@ -18,7 +19,7 @@ int WINAPI WinMain(
 	if (DxLib_Init() == -1)return -1;
 	
 	SceneControler::TransDefault<default_scene>();
-	while (ProcessMessage() == 0)
+	while (ProcessMessage() == 0 && Loop)
 	{
 		SetDrawScreen(DX_SCREEN_BACK);
 		ClearDrawScreen();

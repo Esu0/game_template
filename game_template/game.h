@@ -13,7 +13,7 @@ public:
 	static void settings()
 	{
 		//ÉOÉçÅ[ÉoÉãê›íËÇ»Ç«
-		CtrGlobal.BackGroundColor(Color::hsv(100, 0.8, 0.5));
+		CtrGlobal.BackGroundColor(Color::hsv(200, 1, 0.5));
 	}
 
 	void init()
@@ -32,6 +32,7 @@ class Scene1
 public:
 	Image i;
 	Sprite s;
+	static int count;
 	void init()
 	{
 		i = Image(L"./back.png");

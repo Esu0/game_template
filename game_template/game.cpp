@@ -1,6 +1,7 @@
 #include"game.h"
 
 int default_scene::count = 0;
+int Scene1::count = 0;
 
 void default_scene::update()
 {
@@ -13,4 +14,6 @@ void default_scene::update()
 void Scene1::update()
 {
 	s.draw(0, 500, 0);
+	++count;
+	if (count > 120)GameExit();
 }

@@ -162,3 +162,6 @@ public:
 	}
 };
 
+extern bool Loop;
+
+void GameExit();
