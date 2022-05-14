@@ -6,11 +6,14 @@
 #include<new>
 #include<vector>
 #include<concepts>
+#include<stdexcept>
+#include<functional>
+
 
 class Image
 {
 private:
-	int handle = 0;
+	int handle = -1;
 
 public:
 	Image()
@@ -25,11 +28,12 @@ public:
 	{
 		return handle;
 	}
+};
 
-	~Image()
-	{
-		DeleteGraph(handle);
-	}
+
+class ImageRegistry
+{
+	
 };
 
 class Sprite
@@ -64,7 +68,8 @@ public:
 	void draw(size_t index, int x, int y)
 	{
 		if (index >= handle.size())return;
-		DrawRotaGraph(x, y, 1.0, 0.0, handle[index], TRUE);
+		if (DrawRotaGraph(x, y, 1.0, 0.0, handle[index], TRUE))
+			throw std::runtime_error("•`‰æŽ¸”s");
 	}
 };
 
@@ -110,3 +115,50 @@ class ObjectGroup
 		}
 	}
 };
+
+template<typename Ty>
+concept Scene = requires(Ty Sc)
+{
+	Sc.init();
+	Sc.update();
+};
+
+template<Scene ScTy>
+std::allocator<ScTy> alloc;
+
+class SceneControler
+{
+	static char* ScenesPtr;
+	static std::function<void()> update;
+
+public:
+	template<Scene ScDef>
+	static void TransDefault()
+	{
+		ScenesPtr = reinterpret_cast<char*>(alloc<ScDef>.allocate(1));
+		std::allocator_traits<std::allocator<ScDef>>::construct(alloc<ScDef>, reinterpret_cast<ScDef*>(ScenesPtr));
+		update = [] { reinterpret_cast<ScDef*>(ScenesPtr)->update(); };
+		reinterpret_cast<ScDef*>(ScenesPtr)->init();
+	}
+
+	template<Scene ScFrom, Scene ScTo>
+	static void TransScene()
+	{
+		using allocf = std::allocator<ScFrom>;
+		using traitsf = std::allocator_traits<allocf>;
+		using alloct = std::allocator<ScTo>;
+		using traitst = std::allocator_traits<alloct>;
+		traitsf::destroy(alloc<ScFrom>, reinterpret_cast<ScFrom*>(ScenesPtr));
+		alloc<ScFrom>.deallocate(reinterpret_cast<ScFrom*>(ScenesPtr), 1);
+		ScenesPtr = reinterpret_cast<char*>(alloc<ScTo>.allocate(1));
+		traitst::construct(alloc<ScTo>, reinterpret_cast<ScTo*>(ScenesPtr));
+		update = [] { reinterpret_cast<ScTo*>(ScenesPtr)->update(); };
+		reinterpret_cast<ScTo*>(ScenesPtr)->init();
+	}
+
+	static void do_update()
+	{
+		update();
+	}
+};
+

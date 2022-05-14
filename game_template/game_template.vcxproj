@@ -147,6 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="game_except.cpp" />
     <ClCompile Include="global_config.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

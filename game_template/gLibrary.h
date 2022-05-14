@@ -111,3 +111,4 @@ public:
 		else return (std::max)(G, B);
 	}
 };
+

@@ -8,21 +8,22 @@ int WINAPI WinMain(
 	[[maybe_unused]] _In_ LPSTR lpCmdLine, 
 	[[maybe_unused]] _In_ int nShowCmd) 
 {
-	if (DxLib_Init() == -1)return -1;
-
-	SetAlwaysRunFlag(TRUE);
 	ChangeWindowMode(TRUE);
-	SetGraphMode(1280, 720, 32);
-	SetBackgroundColor(255, 255, 255);  //îwåiÇîíêFÇ…Ç∑ÇÈ
+	SetAlwaysRunFlag(TRUE);
 	SetWindowStyleMode(7);
 	SetWindowSizeChangeEnableFlag(TRUE);
 
+	default_scene::settings();
+	CtrGlobal.Apply();
+	if (DxLib_Init() == -1)return -1;
 	
-	Game game_controler;
-	game_controler.init();
+	SceneControler::TransDefault<default_scene>();
 	while (ProcessMessage() == 0)
 	{
-		game_controler.update();
+		SetDrawScreen(DX_SCREEN_BACK);
+		ClearDrawScreen();
+		SceneControler::do_update();
+		ScreenFlip();
 	}
 	DxLib_End();
 	return 0;
