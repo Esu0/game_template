@@ -4,7 +4,7 @@
 #include"global_config.h"
 #include"gLibrary.h"
 
-class default_scene
+class Start
 {
 public:
 	Image i;
@@ -18,7 +18,7 @@ public:
 
 	void init()
 	{
-		i = Image(L"./back.png");
+		i = ImageRegistry::push(L"./back.png");
 		s1 = Sprite(i);
 		s2 = s1;
 	}
@@ -35,7 +35,7 @@ public:
 	static int count;
 	void init()
 	{
-		i = Image(L"./back.png");
+		i = ImageRegistry::push(L"./back.png");
 		s = Sprite(i);
 	}
 

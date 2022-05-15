@@ -8,7 +8,7 @@
 #include<concepts>
 #include<stdexcept>
 #include<functional>
-
+#include"global_config.h"
 
 class Image
 {
@@ -19,21 +19,61 @@ public:
 	Image()
 	{}
 
-	explicit Image(const wchar_t * path): handle(DxLib::LoadGraph(path))
-	{
-		if (handle == -1)throw get_handle_failed();
-	}
+	explicit Image(int _handle): handle(_handle)
+	{}
 
-	int get_handle()
-	{
-		return handle;
-	}
+	friend class Sprite;
 };
 
 
 class ImageRegistry
 {
-	
+private:
+	static int* Images;
+	static size_t end;
+	static size_t capacity;
+
+private:
+	static void init(size_t size)
+	{
+		delete_image();
+		Images = new int[size];
+		if (Images == nullptr)throw std::bad_alloc();
+		for (size_t i = 0; i < size; ++i)Images[i] = -1;
+		capacity = size;
+		end = 0;
+	}
+
+	static void delete_memory()noexcept
+	{
+		if (Images != nullptr)delete[] Images;
+	}
+public:
+
+	[[nodiscard]]
+	static Image push(const wchar_t *path)
+	{
+		if (end >= capacity)throw std::out_of_range("index out-of-range");
+		Images[end] = LoadGraph(path);
+		std::wstring ws = std::to_wstring(Images[end]);
+		if (Images[end] == -1)throw get_handle_failed();
+		return Image(Images[end++]);
+	}
+
+	static void delete_image()noexcept
+	{
+		if (Images != nullptr)
+		{
+			for (size_t i = 0; i < end; ++i)
+			{
+				DeleteGraph(Images[i]);
+			}
+		}
+		end = 0;
+	}
+
+
+	friend class GlobalControl;
 };
 
 class Sprite
@@ -51,7 +91,7 @@ public:
 		handle.reserve(images.size());
 		for (auto i : images)
 		{
-			handle.push_back(i.get_handle());
+			handle.push_back(i.handle);
 		}
 	}
 
@@ -60,7 +100,7 @@ public:
 		handle.reserve(images.size());
 		for (auto i : images)
 		{
-			handle.push_back(i.get_handle());
+			handle.push_back(i.handle);
 		}
 	}
 
@@ -149,11 +189,13 @@ public:
 		using alloct = std::allocator<ScTo>;
 		using traitst = std::allocator_traits<alloct>;
 		traitsf::destroy(alloc<ScFrom>, reinterpret_cast<ScFrom*>(ScenesPtr));
+		ImageRegistry::delete_image();
 		alloc<ScFrom>.deallocate(reinterpret_cast<ScFrom*>(ScenesPtr), 1);
 		ScenesPtr = reinterpret_cast<char*>(alloc<ScTo>.allocate(1));
 		traitst::construct(alloc<ScTo>, reinterpret_cast<ScTo*>(ScenesPtr));
 		update = [] { reinterpret_cast<ScTo*>(ScenesPtr)->update(); };
 		reinterpret_cast<ScTo*>(ScenesPtr)->init();
+		
 	}
 
 	static void do_update()

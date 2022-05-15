@@ -14,11 +14,11 @@ int WINAPI WinMain(
 	SetWindowStyleMode(7);
 	SetWindowSizeChangeEnableFlag(TRUE);
 
-	default_scene::settings();
+	Start::settings();
 	CtrGlobal.Apply();
 	if (DxLib_Init() == -1)return -1;
 	
-	SceneControler::TransDefault<default_scene>();
+	SceneControler::TransDefault<Start>();
 	while (ProcessMessage() == 0 && Loop)
 	{
 		SetDrawScreen(DX_SCREEN_BACK);
@@ -26,6 +26,6 @@ int WINAPI WinMain(
 		SceneControler::do_update();
 		ScreenFlip();
 	}
-	DxLib_End();
+	CtrGlobal.End();
 	return 0;
 }

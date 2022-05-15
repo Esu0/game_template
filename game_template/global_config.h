@@ -8,7 +8,7 @@ class GlobalControl
 private:
 	static int scx, scy;
 	static Color bg;
-
+	static unsigned int images_max;
 public:
 	void ScreenX(int x)
 	{
@@ -22,11 +22,12 @@ public:
 	{
 		bg = bgc;
 	}
-	void Apply()
+	void ImagesMax(unsigned int max)
 	{
-		expect(SetGraphMode(scx, scy, 32, 60));
-		expect(SetBackgroundColor(bg.R, bg.G, bg.B, 255 - bg.A));
+		images_max = max;
 	}
+	void Apply();
+	void End();
 	~GlobalControl()noexcept
 	{}
 };
