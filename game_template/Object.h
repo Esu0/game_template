@@ -104,11 +104,36 @@ public:
 		}
 	}
 
+	size_t image_num()
+	{
+		return handle.size();
+	}
 
-	void draw(size_t index, int x, int y)
+	void draw(size_t index, Vector2<int> pos)
 	{
 		if (index >= handle.size())return;
-		if (DrawRotaGraph(x, y, 1.0, 0.0, handle[index], TRUE))
+		if (DrawRotaGraph(pos.x, pos.y, 1.0, 0.0, handle[index], TRUE))
+			throw std::runtime_error("•`‰æŽ¸”s");
+	}
+	
+	void draw(size_t index, Vector2<double> pos)
+	{
+		if (index >= handle.size())return;
+		if (DrawRotaGraphF((float)pos.x, (float)pos.y, 1.0, 0.0, handle[index], TRUE))
+			throw std::runtime_error("•`‰æŽ¸”s");
+	}
+
+	void draw(size_t index, Vector2<int> pos, double angle)
+	{
+		if (index >= handle.size())return;
+		if (DrawRotaGraph(pos.x, pos.y, 1.0, angle, handle[index], TRUE))
+			throw std::runtime_error("•`‰æŽ¸”s");
+	}
+
+	void draw(size_t index, Vector2<float> pos, Vector2<double> scale, double angle)
+	{
+		if (index >= handle.size())return;
+		if (DrawRotaGraph3F(pos.x, pos.y, 0.0, 0.0, scale.x, scale.y, angle, handle[index], TRUE))
 			throw std::runtime_error("•`‰æŽ¸”s");
 	}
 };
@@ -148,6 +173,13 @@ class ObjectGroup
 	}
 
 	void draw()
+	{
+		for (ObjTy& elem : objects)
+		{
+			elem.draw();
+		}
+	}
+	void next()
 	{
 		for (ObjTy& elem : objects)
 		{
@@ -206,4 +238,36 @@ public:
 
 extern bool Loop;
 
+class BasicConcreteObject
+{
+protected:
+	Vector2<double> pos;
+	Sprite _sprite;
+	size_t _state;
+
+public:
+	virtual void draw()
+	{
+		_sprite.draw(_state, pos);
+	}
+
+	virtual void next()
+	{}
+
+	virtual void set_sprite(size_t indice)
+	{
+		_state = indice;
+	}
+};
+class Physic
+{
+private:
+	Vector2<double> pos;//ˆÊ’u
+	Vector2<double> vel;//‘¬“x
+	Vector2<double> acc;//‰Á‘¬“x
+	
+public:
+	void draw()
+	{}
+};
 void GameExit();

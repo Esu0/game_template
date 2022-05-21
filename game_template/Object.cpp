@@ -8,6 +8,7 @@ int* ImageRegistry::Images = nullptr;
 size_t ImageRegistry::end = 0;
 size_t ImageRegistry::capacity = 0;
 
+
 void GameExit()
 {
 	Loop = false;

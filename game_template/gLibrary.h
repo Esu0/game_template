@@ -1,5 +1,6 @@
 #pragma once
 #include<cmath>
+#include<concepts>
 
 class Color
 {
@@ -112,3 +113,86 @@ public:
 	}
 };
 
+template<typename Ty>
+concept field = std::semiregular<Ty> &&
+	requires(Ty& elem1, Ty& elem2)
+{
+	{elem1 + elem2}->std::convertible_to<Ty>;
+	{elem1 - elem2}->std::convertible_to<Ty>;
+	{elem1 * elem2}->std::convertible_to<Ty>;
+	{elem1 / elem2}->std::convertible_to<Ty>;
+};
+
+template<field PosTy>
+requires std::convertible_to<PosTy, double> &&
+	std::convertible_to<double, PosTy>
+class Vector2
+{
+public:
+	PosTy x = 0;
+	PosTy y = 0;
+
+	Vector2(){}
+	Vector2(const PosTy _x, const PosTy _y): x(_x), y(_y)
+	{}
+	
+	
+	Vector2(std::initializer_list<PosTy> Ilist)
+	{
+		if (Ilist.size() >= 2)
+		{
+			x = *(Ilist.begin());
+			y = *(Ilist.begin() + 1);
+		}
+		else
+		{
+			x = PosTy();
+			y = PosTy();
+		}
+	}
+
+	template<field Other>
+	requires std::convertible_to<Other, PosTy>
+	Vector2(const Vector2<Other>& _Right)
+	{
+		return Vector2(static_cast<PosTy>(_Right.x), static_cast<PosTy>(_Right.y));
+	}
+
+	static Vector2 circ(PosTy r, double angle)
+	{
+		return Vector2(static_cast<PosTy>(static_cast<double>(r) * (std::cos)(angle) + 0.5), static_cast<PosTy>(static_cast<double>(r) * (std::sin)(angle) + 0.5));
+	}
+
+	Vector2(const Vector2&) = default;
+	Vector2(Vector2&&) = default;
+	~Vector2() = default;
+	Vector2& operator=(const Vector2&) = default;
+	Vector2& operator=(Vector2&&) = default;
+
+	Vector2 operator+(const Vector2& _Right)const&
+	{
+		return Vector2(x + _Right.x, y + _Right.y);
+	}
+
+	Vector2 operator-(const Vector2& _Right)const&
+	{
+		return Vector2(x - _Right.x, y - _Right.y);
+	}
+
+	PosTy operator*(const Vector2& _Right)const&
+	{
+		return x * _Right.x + y * _Right.y;
+	}
+};
+
+template<field PosTy>
+PosTy inner_prod(const Vector2<PosTy>& a, const Vector2<PosTy>& b)
+{
+	return a.x * b.x + a.y * b.y;
+}
+
+template<field PosTy>
+PosTy outer_prod(const Vector2<PosTy>& a, const Vector2<PosTy>& b)
+{
+	return a.x * b.y - a.y * b.x;
+}
