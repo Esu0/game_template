@@ -25,7 +25,6 @@ public:
 	friend class Sprite;
 };
 
-
 class ImageRegistry
 {
 private:
@@ -75,6 +74,7 @@ public:
 
 	friend class GlobalControl;
 };
+
 
 class Sprite
 {
@@ -238,36 +238,95 @@ public:
 
 extern bool Loop;
 
-class BasicConcreteObject
+namespace objects
 {
-protected:
-	Vector2<double> pos;
-	Sprite _sprite;
-	size_t _state;
-
-public:
-	virtual void draw()
+	class BasicConcreteObject
 	{
-		_sprite.draw(_state, pos);
-	}
+	protected:
+		Vector2<double> pos;
+		Sprite _sprite;
+		size_t _state;
 
-	virtual void next()
-	{}
+	public:
+		virtual void draw()
+		{
+			_sprite.draw(_state, pos);
+		}
 
-	virtual void set_sprite(size_t indice)
+		virtual void next()
+		{}
+
+		virtual void set_sprite(size_t indice)
+		{
+			_state = indice;
+		}
+	};
+
+	class AnimationObject : public BasicConcreteObject
 	{
-		_state = indice;
-	}
-};
-class Physic
-{
-private:
-	Vector2<double> pos;//位置
-	Vector2<double> vel;//速度
-	Vector2<double> acc;//加速度
-	
-public:
-	void draw()
-	{}
-};
+	protected:
+		unsigned int _anim_speed;
+		bool _animation;
+		unsigned int _frame;
+
+	public:
+		virtual void draw() override
+		{
+			reinterpret_cast<BasicConcreteObject*>(this)->draw();
+			if (_animation)
+			{
+				if (_frame >= _anim_speed)
+				{
+					if (++_state >= _sprite.image_num())_state = 0;
+					_frame = 1;
+				}
+				else
+				{
+					++_frame;
+				}
+			}
+		}
+
+		void anim_stop()
+		{
+			_animation = false;
+		}
+		void anim_start()
+		{
+			_animation = true;
+			_state = 0;
+			_frame = 0;
+		}
+		void anim_start(size_t state)
+		{
+			_animation = true;
+			_state = state;
+			_frame = 0;
+		}
+		void anim_restart()
+		{
+			_animation = true;
+		}
+	};
+
+	class Text
+	{
+		std::wstring text;
+	};
+
+	class Physic
+	{
+	protected:
+		Vector2<double> pos;//位置
+		Vector2<double> vel;//速度
+		Vector2<double> acc;//加速度
+
+	public:
+		virtual void next()
+		{
+			pos += vel;
+			vel += acc + GlobalGameSetting::gravity;
+		}
+	};
+}
 void GameExit();

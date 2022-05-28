@@ -174,9 +174,23 @@ public:
 		return Vector2(x + _Right.x, y + _Right.y);
 	}
 
+	Vector2& operator+=(const Vector2& _Right)
+	{
+		x += _Right.x;
+		y += _Right.y;
+		return *this;
+	}
+
 	Vector2 operator-(const Vector2& _Right)const&
 	{
 		return Vector2(x - _Right.x, y - _Right.y);
+	}
+
+	Vector2& operator-=(const Vector2& _Right)
+	{
+		x -= _Right.x;
+		y -= _Right.y;
+		return *this;
 	}
 
 	PosTy operator*(const Vector2& _Right)const&

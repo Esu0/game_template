@@ -32,4 +32,9 @@ public:
 	{}
 };
 
+class GlobalGameSetting
+{
+public:
+	static Vector2<double> gravity;
+};
 extern GlobalControl CtrGlobal;

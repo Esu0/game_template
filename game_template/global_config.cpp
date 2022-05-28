@@ -21,3 +21,4 @@ void GlobalControl::End()
 
 GlobalControl CtrGlobal;
 
+Vector2<double> GlobalGameSetting::gravity;
