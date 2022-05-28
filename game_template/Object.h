@@ -109,24 +109,17 @@ public:
 		return handle.size();
 	}
 
-	void draw(size_t index, Vector2<int> pos)
+	void draw(size_t index, Vector2<float> pos)
 	{
 		if (index >= handle.size())return;
-		if (DrawRotaGraph(pos.x, pos.y, 1.0, 0.0, handle[index], TRUE))
-			throw std::runtime_error("•`‰æŽ¸”s");
-	}
-	
-	void draw(size_t index, Vector2<double> pos)
-	{
-		if (index >= handle.size())return;
-		if (DrawRotaGraphF((float)pos.x, (float)pos.y, 1.0, 0.0, handle[index], TRUE))
+		if (DrawRotaGraphF(pos.x, pos.y, 1.0, 0.0, handle[index], TRUE))
 			throw std::runtime_error("•`‰æŽ¸”s");
 	}
 
-	void draw(size_t index, Vector2<int> pos, double angle)
+	void draw(size_t index, Vector2<float> pos, double angle)
 	{
 		if (index >= handle.size())return;
-		if (DrawRotaGraph(pos.x, pos.y, 1.0, angle, handle[index], TRUE))
+		if (DrawRotaGraphF(pos.x, pos.y, 1.0, angle, handle[index], TRUE))
 			throw std::runtime_error("•`‰æŽ¸”s");
 	}
 
