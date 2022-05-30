@@ -5,8 +5,14 @@ int Scene1::count = 0;
 
 void Start::update()
 {
+	textobj.next();
+	textobj2.next();
+	textobj.SetText(std::to_wstring(CtrGlobal.GetFPSNow()));
+	textobj2.SetText(std::to_wstring(CtrGlobal.GetFPSNow()));
 	s1.draw(0, {0, 0});
 	s2.draw(0, {0, 100});
+	textobj.draw();
+	textobj2.draw();
 	++count;
 	if (count > 120)SceneControler::TransScene<Start, Scene1>();
 }

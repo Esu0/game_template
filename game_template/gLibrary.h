@@ -1,6 +1,7 @@
 #pragma once
 #include<cmath>
 #include<concepts>
+#include<DxLib.h>
 
 class Color
 {
@@ -11,6 +12,9 @@ class Color
 
 public:
 	byte R = 0, G = 0, B = 0, A = 255;
+
+	Color()
+	{}
 
 	Color(unsigned int _code)
 		:R((_code >> 4) & 0xff), G((_code >> 2) & 0xff), B(_code & 0xff)
@@ -35,11 +39,37 @@ public:
 		else return Color(0, 0, 0, 0);
 	}
 
+	static Color hsl(int hue, double sat, double lum, byte _A = 255)
+	{
+		double max, min;
+		if (lum >= 0.5)
+		{
+			max = 255.0 * (lum + (1.0 - lum) * sat);
+			min = 255.0 * (lum - (1.0 - lum) * sat);
+		}
+		else
+		{
+			max = 255.0 * (lum + lum * sat);
+			min = 255.0 * (lum - lum * sat);
+		}
+		if (0 <= hue && hue < 60)return Color((byte)max, (byte)((double)hue / 60 * (max - min) + min), (byte)min, _A);
+		else if (hue < 120)return Color((byte)((double)(120 - hue) / 60 * (max - min) + min), (byte)max, (byte)min, _A);
+		else if (hue < 180)return Color((byte)min, (byte)max, (byte)((double)(hue - 120) / 60 * (max - min) + min), _A);
+		else if (hue < 240)return Color((byte)min, (byte)((double)(240 - hue) / 60 * (max - min) + min), (byte)max, _A);
+		else if (hue < 300)return Color((byte)((double)(hue - 240) / 60 * (max - min) + min), (byte)min, (byte)max, _A);
+		else if (hue < 360)return Color((byte)max, (byte)min, (byte)((double)(360 - hue) / 60 * (max - min) + min), _A);
+		else return Color(0, 0, 0, 0);
+	}
+
 	static Color code(unsigned int _code)
 	{
 		return Color((_code >> 6) & 0xff, (_code >> 4) & 0xff, (_code >> 2) & 0xff, _code & 0xff);
 	}
 
+	unsigned int convert()
+	{
+		return GetColor(R, G, B);
+	}
 	int hue()
 	{
 		int max, min, a, b, plus;
@@ -153,10 +183,8 @@ public:
 
 	template<field Other>
 	requires std::convertible_to<Other, PosTy>
-	Vector2(const Vector2<Other>& _Right)
-	{
-		return Vector2(static_cast<PosTy>(_Right.x), static_cast<PosTy>(_Right.y));
-	}
+	Vector2(const Vector2<Other>& _Right) :Vector2(static_cast<PosTy>(_Right.x), static_cast<PosTy>(_Right.y))
+	{}
 
 	static Vector2 circ(PosTy r, double angle)
 	{

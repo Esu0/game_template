@@ -302,11 +302,6 @@ namespace objects
 		}
 	};
 
-	class Text
-	{
-		std::wstring text;
-	};
-
 	class Physic
 	{
 	protected:

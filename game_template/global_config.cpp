@@ -1,9 +1,14 @@
 #include"global_config.h"
 #include"Object.h"
+
 int GlobalControl::scx = 1280;
 int GlobalControl::scy = 720;
 Color GlobalControl::bg = 0xffffff;
 unsigned int GlobalControl::images_max = 65535;
+double GlobalControl::game_speed = 1.0;
+double GlobalControl::fps = 60.0;
+double GlobalControl::fpsnow = 0;
+unsigned long long GlobalControl::frame = 0;
 
 void GlobalControl::Apply()
 {

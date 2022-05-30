@@ -1,6 +1,9 @@
 #pragma once
 #include<DxLib.h>
+#include<string>
 #include"game_except.h"
+#include"gLibrary.h"
+#include<functional>
 
 enum class sampling : char
 {
@@ -99,6 +102,16 @@ public:
 		_Right.moved = true;
 	}
 
+	bool HasEdge()
+	{
+		return edge;
+	}
+
+	int get_handle()
+	{
+		return handle;
+	}
+
 	virtual ~Font()
 	{
 		if (!moved)
@@ -107,3 +120,84 @@ public:
 		}
 	}
 };
+
+namespace objects
+{
+	class Text
+	{
+	private:
+		std::wstring text;
+		Font* font;
+		Color char_color;
+		Color edge_color;//エッジ色のアルファ値は適用されない
+		Vector2<float> pos;
+		std::function<void(Vector2<float>&)> _f;
+
+	public:
+		static constexpr std::nullptr_t DefaultFont = nullptr;
+		//デフォルトのフォント
+		Text() :text(), font(nullptr)
+		{
+			_f = [](Vector2<float>&) {};
+		}
+
+		explicit Text(Font* _font) :text(), font(_font)
+		{
+			_f = [](Vector2<float>&) {};
+		}
+
+		Text(std::wstring&& init, Font* _font, Color col = Color()) :text(init), font(_font)
+		{
+			_f = [](Vector2<float>&) {};
+		}
+
+		void draw()
+		{
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, char_color.A);
+			if (font == nullptr)DrawStringF(pos.x, pos.y, text.c_str(), char_color.convert(), edge_color.convert());
+			else if (font->HasEdge())DrawStringFToHandle(pos.x, pos.y, text.c_str(), char_color.convert(), font->get_handle(), edge_color.convert());
+			else DrawStringFToHandle(pos.x, pos.y, text.c_str(), char_color.convert(), font->get_handle());
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		}
+
+		void SetMove(std::function<void(Vector2<float>&)> func)
+		{
+			_f = func;
+		}
+		
+		void SetPos(Vector2<float> p)
+		{
+			pos = p;
+		}
+
+		void SetPosx(float x)
+		{
+			pos.x = x;
+		}
+
+		void SetPosy(float y)
+		{
+			pos.y = y;
+		}
+
+		void SetText(std::wstring str)
+		{
+			text = str;
+		}
+
+		void ChangeColor(Color col)
+		{
+			char_color = col;
+		}
+
+		Vector2<float> GetPos()
+		{
+			return pos;
+		}
+
+		void next()
+		{
+			_f(pos);
+		}
+	};
+}
