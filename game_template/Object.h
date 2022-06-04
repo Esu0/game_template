@@ -14,12 +14,14 @@ class Image
 {
 private:
 	int handle = -1;
-
+	int s_handle = -1;
+	unsigned int width = 0;
+	unsigned int height = 0;
 public:
 	Image()
 	{}
 
-	explicit Image(int _handle): handle(_handle)
+	explicit Image(int _handle, int _s_handle, unsigned int _width, unsigned int _height) : handle(_handle), s_handle(_s_handle), width(_width), height(_height)
 	{}
 
 	friend class Sprite;
@@ -28,6 +30,7 @@ public:
 class ImageRegistry
 {
 private:
+	static int* SoftImages;
 	static int* Images;
 	static size_t end;
 	static size_t capacity;
@@ -37,8 +40,10 @@ private:
 	{
 		delete_image();
 		Images = new int[size];
-		if (Images == nullptr)throw std::bad_alloc();
+		SoftImages = new int[size];
+		if (Images == nullptr || SoftImages == nullptr)throw std::bad_alloc();
 		for (size_t i = 0; i < size; ++i)Images[i] = -1;
+		for (size_t i = 0; i < size; ++i)SoftImages[i] = -1;
 		capacity = size;
 		end = 0;
 	}
@@ -46,6 +51,7 @@ private:
 	static void delete_memory()noexcept
 	{
 		if (Images != nullptr)delete[] Images;
+		if (SoftImages != nullptr)delete[] SoftImages;
 	}
 public:
 
@@ -53,10 +59,13 @@ public:
 	static Image push(const wchar_t *path)
 	{
 		if (end >= capacity)throw std::out_of_range("index out-of-range");
-		Images[end] = LoadGraph(path);
-		std::wstring ws = std::to_wstring(Images[end]);
-		if (Images[end] == -1)throw get_handle_failed();
-		return Image(Images[end++]);
+		SoftImages[end] = LoadSoftImage(path);
+		Images[end] = CreateGraphFromSoftImage(SoftImages[end]);
+		if (Images[end] == -1 || SoftImages[end] == -1)throw get_handle_failed();
+		int x, y;
+		GetGraphSize(Images[end], &x, &y);
+		auto i = end++;
+		return Image(Images[i], SoftImages[i], x, y);
 	}
 
 	static void delete_image()noexcept
@@ -66,6 +75,9 @@ public:
 			for (size_t i = 0; i < end; ++i)
 			{
 				DeleteGraph(Images[i]);
+				Images[i] = -1;
+				DeleteSoftImage(SoftImages[i]);
+				SoftImages[i] = -1;
 			}
 		}
 		end = 0;
@@ -75,32 +87,49 @@ public:
 	friend class GlobalControl;
 };
 
+template<typename Ty>
+concept imageTy = requires(Ty i)
+{
+	{ i.handle }->std::same_as<int>;
+	{ i.width }->std::same_as<unsigned int>;
+	{ i.height }->std::same_as<unsigned int>;
+};
 
 class Sprite
 {
 private:
 	std::vector<int> handle;
-
+	std::vector<int> s_handle;
+	unsigned int width = 0;
+	unsigned int height = 0;
 public:
 	Sprite(){}
 
 	template<typename... Args>
-	Sprite(const Args&... image): handle()
+	Sprite(const Args&... image): handle(), s_handle()
 	{
 		std::initializer_list<Image> images = { image... };
 		handle.reserve(images.size());
+		s_handle.reserve(images.size());
 		for (auto i : images)
 		{
 			handle.push_back(i.handle);
+			s_handle.push_back(i.s_handle);
+			if (width < i.width)width = i.width;
+			if (height < i.height)height = i.height;
 		}
 	}
 
-	explicit Sprite(std::initializer_list<Image> images): handle()
+	explicit Sprite(std::initializer_list<Image> images): handle(), s_handle()
 	{
 		handle.reserve(images.size());
+		s_handle.reserve(images.size());
 		for (auto i : images)
 		{
 			handle.push_back(i.handle);
+			s_handle.push_back(i.s_handle);
+			if (width < i.width)width = i.width;
+			if (height < i.height)height = i.height;
 		}
 	}
 
@@ -128,6 +157,21 @@ public:
 		if (index >= handle.size())return;
 		if (DrawRotaGraph3F(pos.x, pos.y, 0.0, 0.0, scale.x, scale.y, angle, handle[index], TRUE))
 			throw std::runtime_error("•`‰æŽ¸”s");
+	}
+
+	Vector2<int> GetSize()
+	{
+		return { (int)width,(int)height };
+	}
+
+	unsigned int Width()
+	{
+		return width;
+	}
+
+	unsigned int Height()
+	{
+		return height;
 	}
 };
 

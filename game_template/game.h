@@ -4,6 +4,7 @@
 #include"global_config.h"
 #include"gLibrary.h"
 #include"texts.h"
+#include"Timer.h"
 
 class Start
 {
@@ -12,8 +13,8 @@ public:
 	Sprite s1, s2;
 	objects::Text textobj;
 	objects::Text textobj2;
+	Timer t;
 
-	static int count;
 	static void settings()
 	{
 		//ÉOÉçÅ[ÉoÉãê›íËÇ»Ç«
@@ -31,6 +32,8 @@ public:
 		textobj2 = objects::Text(objects::Text::DefaultFont);
 		textobj2.SetPos({ 300,200 });
 		textobj2.ChangeColor(Color::rgb(255, 0, 0));
+		t.sets(2);
+		t.start();
 	}
 
 	void update();
@@ -42,11 +45,15 @@ class Scene1
 public:
 	Image i;
 	Sprite s;
-	static int count;
+	Timer t;
+	
 	void init()
 	{
+		
 		i = ImageRegistry::push(L"./back.png");
 		s = Sprite(i);
+		t.sets(10);
+		t.start();
 	}
 
 	void update();

@@ -7,62 +7,59 @@ class Timer
 {
 private:
 	unsigned long long _configured = 0;
-	unsigned long long _remaining = 0;
-	bool _stop = true;
+	unsigned long long _started = 0xffffffffffffffff;
 public:
+	Timer()
+	{}
 
-	Timer(unsigned long long frames) : _configured(frames), _remaining(frames), _stop(false)
+	Timer(unsigned long long frames) : _configured(frames), _started(CtrGlobal.GetFrame())
 	{}
 
 	void setf(unsigned long long frames)noexcept
 	{
 		_configured = frames;
-		_stop = true;
 	}
 
 	void sets(double sec)noexcept
 	{
 		_configured = (unsigned long long)(sec * CtrGlobal.GetFPS());
-		_stop = true;
 	}
 
 	void start()noexcept
 	{
-		_remaining = _configured;
-		_stop = false;
+		_started = CtrGlobal.GetFrame();
 	}
 
 	void restart()noexcept
 	{
-		_stop = false;
+		_started = CtrGlobal.GetFrame();
 	}
 
 	void end()noexcept
 	{
-		_remaining = 0;
-		_stop = true;
+		_started = 0xffffffffffffffff;
 	}
 
 	void reset()noexcept
 	{
-		_remaining = _configured;
-		_stop = true;
-	}
-
-	void clock()noexcept
-	{
-		if (!_stop && !_remaining)
-			--_remaining;
+		_started = 0xffffffffffffffff;
 	}
 
 	unsigned long long remaining()noexcept
 	{
-		return _remaining;
+		if (_started != 0xffffffffffffffff && _started + _configured > CtrGlobal.GetFrame())
+			return _configured - CtrGlobal.GetFrame() + _started;
+		else return 0;
 	}
 
 	bool alert()noexcept
 	{
-		return _remaining == 0;
+		return _started != 0xffffffffffffffff && _configured <= CtrGlobal.GetFrame() - _started;
+	}
+
+	bool Enabled()noexcept
+	{
+		return _started != 0xffffffffffffffff;
 	}
 };
 
