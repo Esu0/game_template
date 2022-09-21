@@ -3,6 +3,9 @@
 #include<concepts>
 #include<DxLib.h>
 
+/// <summary>
+/// 色とアルファ値を表す型
+/// </summary>
 class Color
 {
 	using byte = unsigned char;
@@ -20,12 +23,29 @@ public:
 		:R((_code >> 4) & 0xff), G((_code >> 2) & 0xff), B(_code & 0xff)
 	{}
 
+	/// <summary>
+	/// RGB(A)値から色を生成
+	/// </summary>
+	/// <param name="_R">R値</param>
+	/// <param name="_G">G値</param>
+	/// <param name="_B">B値</param>
+	/// <param name="_A">アルファ値</param>
+	/// <returns>Color型に変換した結果</returns>
 	static Color rgb(byte _R, byte _G, byte _B, byte _A = 255)
 	{
 		return Color(_R, _G, _B, _A);
 	}
-
+	
 	//0 <= hue < 360, 0 <= sat <= 1, 0 <= val <= 1
+	
+	/// <summary>
+	/// HSV値から色を生成
+	/// </summary>
+	/// <param name="hue">色相</param>
+	/// <param name="sat">彩度</param>
+	/// <param name="val">明度</param>
+	/// <param name="_A">アルファ値</param>
+	/// <returns>Color型に変換した結果</returns>
 	static Color hsv(int hue, double sat, double val, byte _A = 255)
 	{
 		double max = val * 255;
@@ -39,6 +59,14 @@ public:
 		else return Color(0, 0, 0, 0);
 	}
 
+	/// <summary>
+	/// hsl値から色を生成
+	/// </summary>
+	/// <param name="hue">色相</param>
+	/// <param name="sat">彩度</param>
+	/// <param name="lum">輝度</param>
+	/// <param name="_A">アルファ値</param>
+	/// <returns>Color型に変換した結果</returns>
 	static Color hsl(int hue, double sat, double lum, byte _A = 255)
 	{
 		double max, min;
@@ -61,15 +89,29 @@ public:
 		else return Color(0, 0, 0, 0);
 	}
 
+	/// <summary>
+	/// 色コードから色を生成
+	/// </summary>
+	/// <param name="_code">色コード(アルファ値を含まない)</param>
+	/// <returns>Color型に変換した結果</returns>
 	static Color code(unsigned int _code)
 	{
 		return Color((_code >> 6) & 0xff, (_code >> 4) & 0xff, (_code >> 2) & 0xff, _code & 0xff);
 	}
 
+	/// <summary>
+	/// Color型の色をDxLibの関数で使える形式に変換
+	/// </summary>
+	/// <returns>変換結果</returns>
 	unsigned int convert()
 	{
 		return GetColor(R, G, B);
 	}
+
+	/// <summary>
+	/// 色相を計算
+	/// </summary>
+	/// <returns>色相</returns>
 	int hue()
 	{
 		int max, min, a, b, plus;
@@ -120,6 +162,10 @@ public:
 		return (int)result;
 	}
 
+	/// <summary>
+	/// 彩度を計算
+	/// </summary>
+	/// <returns>彩度</returns>
 	double sat()
 	{
 		if (R > G)
@@ -136,6 +182,10 @@ public:
 		}
 	}
 
+	/// <summary>
+	/// 明度を計算
+	/// </summary>
+	/// <returns>明度</returns>
 	double val()
 	{
 		if (R > G)return (std::max)(R, B);

@@ -152,6 +152,7 @@
     <ClCompile Include="game_except.cpp" />
     <ClCompile Include="global_config.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -159,8 +160,10 @@
     <ClInclude Include="gLibrary.h" />
     <ClInclude Include="global_config.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="shapes.h" />
     <ClInclude Include="texts.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="trigger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

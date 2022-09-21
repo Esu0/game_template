@@ -7,11 +7,11 @@ void Start::update()
 	textobj2.next();
 	textobj.SetText(std::to_wstring(CtrGlobal.GetFPSNow()));
 	textobj2.SetText(std::to_wstring(t.remaining()));
-	s1.draw(0, {0, 0});
-	s2.draw(0, {0, 100});
 	textobj.draw();
 	textobj2.draw();
-	if (t.alert())SceneControler::TransScene<Start, Scene1>();
+	DrawCircle({ 300,300 }, 120, 0x000000);
+	DrawEllipse({ 640,320 }, 80, 300, 0x000000);
+	//if (t.alert())SceneControler::TransScene<Start, Scene1>();
 }
 
 void Scene1::update()
